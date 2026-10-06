@@ -35,10 +35,69 @@ import "./style.css";
 const byId = Object.fromEntries(articles.map((a) => [a.id, a]));
 const nav = [
   ["overview", "总览"],
+  ["knowledge-map", "知识图谱"],
   ["history", "历史脉络"],
   ["traditions", "宗派关系"],
   ["regions", "地域佛教"],
   ["library", "知识索引"],
+];
+
+const knowledgeBranches = [
+  {
+    id: "origins",
+    label: "起源与历史",
+    range: "前5世纪 · 当代",
+    summary: "从释迦牟尼、早期僧团与部派，到大乘、密教和近现代复兴。",
+    icon: Route,
+    articles: ["buddha", "early", "india", "modern"],
+  },
+  {
+    id: "schools",
+    label: "传统与宗派",
+    range: "体系 · 宗派",
+    summary: "先分清上座部、大乘和金刚乘，再进入汉传、日本与藏传各派。",
+    icon: GitBranch,
+    articles: [
+      "three",
+      "theravada",
+      "mahayana",
+      "vajrayana",
+      "china-schools",
+      "tibet-schools",
+    ],
+  },
+  {
+    id: "places",
+    label: "地域与传播",
+    range: "印度 · 亚洲",
+    summary: "沿陆路与海路，看佛教如何进入中国、西藏、日本与东南亚。",
+    icon: Globe2,
+    articles: [
+      "india",
+      "china",
+      "tibet",
+      "japan",
+      "southeast",
+      "korea-vietnam",
+    ],
+  },
+  {
+    id: "ideas",
+    label: "思想与生活",
+    range: "教义 · 经典 · 实践",
+    summary: "从四圣谛、缘起与空性，连接经典、禅修、伦理和日常文化。",
+    icon: Layers,
+    articles: [
+      "truths",
+      "dependent",
+      "self",
+      "emptiness",
+      "canon",
+      "meditation",
+      "ethics",
+      "ritual",
+    ],
+  },
 ];
 function useStored(key) {
   const [items, set] = useState(() => {
@@ -90,6 +149,7 @@ function App() {
     [filter, setFilter] = useState("全部"),
     [search, setSearch] = useState(""),
     [region, setRegion] = useState("india"),
+    [mapBranch, setMapBranch] = useState("origins"),
     [era, setEra] = useState(0),
     [expanded, setExpanded] = useState(false),
     [quizIndex, setQuizIndex] = useState(0),
@@ -100,13 +160,11 @@ function App() {
     articleTop = useRef(null);
   const navigate = (id) => {
     setMobile(false);
-    document
-      .getElementById(id)
-      ?.scrollIntoView({
-        behavior: matchMedia("(prefers-reduced-motion: reduce)").matches
-          ? "auto"
-          : "smooth",
-      });
+    document.getElementById(id)?.scrollIntoView({
+      behavior: matchMedia("(prefers-reduced-motion: reduce)").matches
+        ? "auto"
+        : "smooth",
+    });
     setActive(id);
   };
   const openArticle = (id) => {
@@ -184,6 +242,7 @@ function App() {
       .includes(search.toLowerCase()),
   );
   const currentRegion = regions.find((r) => r.id === region),
+    currentBranch = knowledgeBranches.find((branch) => branch.id === mapBranch),
     item = modal?.type === "article" ? byId[modal.id] : null;
   const studyArticles = articles.filter((a) => a.category === "思想");
   const articleButtons = (ids) =>
@@ -286,7 +345,7 @@ function App() {
               </button>
               <button
                 className="text-button"
-                onClick={() => navigate("traditions")}
+                onClick={() => navigate("knowledge-map")}
               >
                 先看一张脉络图 <ArrowUpRight size={17} />
               </button>
@@ -327,9 +386,117 @@ function App() {
             ))}
           </div>
         </div>
+        <section className="knowledge-map-section" id="knowledge-map">
+          <div className="container section">
+            <SectionTitle
+              number="01"
+              eyebrow="THE KNOWLEDGE MAP"
+              title="先看整棵树，再走进每一片叶子。"
+              aside={
+                <button
+                  className="text-button"
+                  onClick={() => openArticle("start")}
+                >
+                  阅读入门说明 <ArrowUpRight size={16} />
+                </button>
+              }
+            >
+              佛教的知识可以从四条主线进入。选择一条，下面会显示最值得先读的主题。
+            </SectionTitle>
+            <div className="knowledge-map-shell">
+              <div className="knowledge-map-canvas">
+                <svg
+                  className="knowledge-map-connectors"
+                  viewBox="0 0 1200 280"
+                  role="img"
+                  aria-labelledby="buddhism-map-title buddhism-map-desc"
+                >
+                  <title id="buddhism-map-title">佛教知识图谱</title>
+                  <desc id="buddhism-map-desc">
+                    佛教共同根基向起源与历史、传统与宗派、地域与传播、思想与生活四条主线展开。
+                  </desc>
+                <path d="M600 104V144" />
+                <path d="M152 144H1048" />
+                <path d="M152 144V184" />
+                <path d="M448 144V184" />
+                <path d="M752 144V184" />
+                <path d="M1048 144V184" />
+                </svg>
+                <button
+                  className="knowledge-root"
+                  onClick={() => openArticle("start")}
+                >
+                  <LeafMark size={26} />
+                  <span>
+                    <small>共同根基</small>
+                    佛教：一条觉醒之道
+                  </span>
+                  <ArrowUpRight size={15} />
+                </button>
+              <div className="knowledge-branches">
+                  {knowledgeBranches.map((branch) => {
+                    const Icon = branch.icon;
+                    return (
+                      <button
+                        key={branch.id}
+                        className={mapBranch === branch.id ? "active" : ""}
+                        aria-pressed={mapBranch === branch.id}
+                        onClick={() => setMapBranch(branch.id)}
+                      >
+                        <Icon size={18} />
+                        <span>
+                          <strong>{branch.label}</strong>
+                          <small>{branch.range}</small>
+                        </span>
+                        <ChevronRight size={16} />
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+              <div className="knowledge-map-detail" aria-live="polite">
+                <div className="knowledge-detail-copy">
+                  <span className="knowledge-detail-index">
+                    {String(
+                      knowledgeBranches.findIndex(
+                        (branch) => branch.id === mapBranch,
+                      ) + 1,
+                    ).padStart(2, "0")}
+                    <i />
+                    04
+                  </span>
+                  <div>
+                    <div className="eyebrow">CURRENT PATH</div>
+                    <h3>{currentBranch.label}</h3>
+                    <p>{currentBranch.summary}</p>
+                  </div>
+                </div>
+                <div className="knowledge-topic-list">
+                  {currentBranch.articles.map((id, index) => (
+                    <button key={id} onClick={() => openArticle(id)}>
+                      <span>{String(index + 1).padStart(2, "0")}</span>
+                      <div>
+                        <strong>{byId[id].title}</strong>
+                        <small>{byId[id].subtitle}</small>
+                      </div>
+                      <ArrowUpRight size={16} />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div className="knowledge-map-note">
+              <GitBranch size={16} />
+              <p>
+                <strong>读图提示：</strong>
+                “上座部、大乘、金刚乘”是传统与修行体系；“汉传、藏传、日本佛教”是地域与文化传统。两种分类彼此交叉，不能放在同一级简单并列。
+              </p>
+            </div>
+          </div>
+        </section>
         <section className="section container" id="traditions">
           <SectionTitle
-            number="01"
+            number="02"
             eyebrow="THE BIG PICTURE"
             title="同一个源头，不同的枝叶。"
             aside={
@@ -480,7 +647,7 @@ function App() {
         <section className="history-section" id="history">
           <div className="container section">
             <SectionTitle
-              number="02"
+              number="03"
               eyebrow="A JOURNEY THROUGH TIME"
               title="两千五百余年，不是一条直线。"
             >
@@ -546,7 +713,7 @@ function App() {
         </section>
         <section className="section container" id="regions">
           <SectionTitle
-            number="03"
+            number="04"
             eyebrow="ACROSS ASIA"
             title="走向不同的土地，长出不同的风景。"
           >
@@ -647,7 +814,7 @@ function App() {
         <section className="knowledge-section" id="library">
           <div className="container section">
             <SectionTitle
-              number="04"
+              number="05"
               eyebrow="ONE QUESTION AT A TIME"
               title="从一个问题，读懂一个概念。"
               aside={
@@ -808,7 +975,7 @@ function App() {
         <section className="section container faq-section">
           <div>
             <div className="eyebrow">
-              <span>05</span>A LITTLE MORE CLARITY
+              <span>06</span>A LITTLE MORE CLARITY
             </div>
             <h2>
               几个常见的误解，
