@@ -1,0 +1,18 @@
+{
+  "name": "一叶 · 佛教脉络指南",
+  "short_name": "一叶",
+  "description": "通俗、清晰的佛教知识地图",
+  "lang": "zh-CN",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#faf9f5",
+  "theme_color": "#75825d",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
