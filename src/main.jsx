@@ -31,11 +31,12 @@ import {
   readingPath,
 } from "./data";
 import { HeroArt, LeafMark, Dharma, RouteMap } from "./Illustrations";
+import MindMap from "./MindMap";
 import "./style.css";
 const byId = Object.fromEntries(articles.map((a) => [a.id, a]));
 const nav = [
   ["overview", "总览"],
-  ["knowledge-map", "知识图谱"],
+  ["knowledge-map", "宗派思维导图"],
   ["history", "历史脉络"],
   ["traditions", "宗派关系"],
   ["regions", "地域佛教"],
@@ -391,7 +392,7 @@ function App() {
             <SectionTitle
               number="01"
               eyebrow="THE KNOWLEDGE MAP"
-              title="先看整棵树，再走进每一片叶子。"
+              title="从一个源头，看见宗派的来路。"
               aside={
                 <button
                   className="text-button"
@@ -401,90 +402,96 @@ function App() {
                 </button>
               }
             >
-              佛教的知识可以从四条主线进入。选择一条，下面会显示最值得先读的主题。
+              从佛教起源，到中国八宗、日本诸宗和藏传各派。沿着连线逐层展开，既看每一支，也看它从哪里来。
             </SectionTitle>
-            <div className="knowledge-map-shell">
-              <div className="knowledge-map-canvas">
-                <svg
-                  className="knowledge-map-connectors"
-                  viewBox="0 0 1200 280"
-                  role="img"
-                  aria-labelledby="buddhism-map-title buddhism-map-desc"
-                >
-                  <title id="buddhism-map-title">佛教知识图谱</title>
-                  <desc id="buddhism-map-desc">
-                    佛教共同根基向起源与历史、传统与宗派、地域与传播、思想与生活四条主线展开。
-                  </desc>
-                <path d="M600 104V144" />
-                <path d="M152 144H1048" />
-                <path d="M152 144V184" />
-                <path d="M448 144V184" />
-                <path d="M752 144V184" />
-                <path d="M1048 144V184" />
-                </svg>
-                <button
-                  className="knowledge-root"
-                  onClick={() => openArticle("start")}
-                >
-                  <LeafMark size={26} />
-                  <span>
-                    <small>共同根基</small>
-                    佛教：一条觉醒之道
-                  </span>
-                  <ArrowUpRight size={15} />
-                </button>
-              <div className="knowledge-branches">
-                  {knowledgeBranches.map((branch) => {
-                    const Icon = branch.icon;
-                    return (
-                      <button
-                        key={branch.id}
-                        className={mapBranch === branch.id ? "active" : ""}
-                        aria-pressed={mapBranch === branch.id}
-                        onClick={() => setMapBranch(branch.id)}
-                      >
-                        <Icon size={18} />
-                        <span>
-                          <strong>{branch.label}</strong>
-                          <small>{branch.range}</small>
-                        </span>
-                        <ChevronRight size={16} />
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-              <div className="knowledge-map-detail" aria-live="polite">
-                <div className="knowledge-detail-copy">
-                  <span className="knowledge-detail-index">
-                    {String(
-                      knowledgeBranches.findIndex(
-                        (branch) => branch.id === mapBranch,
-                      ) + 1,
-                    ).padStart(2, "0")}
-                    <i />
-                    04
-                  </span>
-                  <div>
-                    <div className="eyebrow">CURRENT PATH</div>
-                    <h3>{currentBranch.label}</h3>
-                    <p>{currentBranch.summary}</p>
+            <MindMap openArticle={openArticle} />
+            <details className="knowledge-reading-paths">
+              <summary>
+                从历史、地域、思想四条主线继续阅读 <ChevronDown size={16} />
+              </summary>
+              <div className="knowledge-map-shell">
+                <div className="knowledge-map-canvas">
+                  <svg
+                    className="knowledge-map-connectors"
+                    viewBox="0 0 1200 280"
+                    role="img"
+                    aria-labelledby="buddhism-map-title buddhism-map-desc"
+                  >
+                    <title id="buddhism-map-title">佛教知识图谱</title>
+                    <desc id="buddhism-map-desc">
+                      佛教共同根基向起源与历史、传统与宗派、地域与传播、思想与生活四条主线展开。
+                    </desc>
+                    <path d="M600 104V144" />
+                    <path d="M152 144H1048" />
+                    <path d="M152 144V184" />
+                    <path d="M448 144V184" />
+                    <path d="M752 144V184" />
+                    <path d="M1048 144V184" />
+                  </svg>
+                  <button
+                    className="knowledge-root"
+                    onClick={() => openArticle("start")}
+                  >
+                    <LeafMark size={26} />
+                    <span>
+                      <small>共同根基</small>
+                      佛教：一条觉醒之道
+                    </span>
+                    <ArrowUpRight size={15} />
+                  </button>
+                  <div className="knowledge-branches">
+                    {knowledgeBranches.map((branch) => {
+                      const Icon = branch.icon;
+                      return (
+                        <button
+                          key={branch.id}
+                          className={mapBranch === branch.id ? "active" : ""}
+                          aria-pressed={mapBranch === branch.id}
+                          onClick={() => setMapBranch(branch.id)}
+                        >
+                          <Icon size={18} />
+                          <span>
+                            <strong>{branch.label}</strong>
+                            <small>{branch.range}</small>
+                          </span>
+                          <ChevronRight size={16} />
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
-                <div className="knowledge-topic-list">
-                  {currentBranch.articles.map((id, index) => (
-                    <button key={id} onClick={() => openArticle(id)}>
-                      <span>{String(index + 1).padStart(2, "0")}</span>
-                      <div>
-                        <strong>{byId[id].title}</strong>
-                        <small>{byId[id].subtitle}</small>
-                      </div>
-                      <ArrowUpRight size={16} />
-                    </button>
-                  ))}
+                <div className="knowledge-map-detail" aria-live="polite">
+                  <div className="knowledge-detail-copy">
+                    <span className="knowledge-detail-index">
+                      {String(
+                        knowledgeBranches.findIndex(
+                          (branch) => branch.id === mapBranch,
+                        ) + 1,
+                      ).padStart(2, "0")}
+                      <i />
+                      04
+                    </span>
+                    <div>
+                      <div className="eyebrow">CURRENT PATH</div>
+                      <h3>{currentBranch.label}</h3>
+                      <p>{currentBranch.summary}</p>
+                    </div>
+                  </div>
+                  <div className="knowledge-topic-list">
+                    {currentBranch.articles.map((id, index) => (
+                      <button key={id} onClick={() => openArticle(id)}>
+                        <span>{String(index + 1).padStart(2, "0")}</span>
+                        <div>
+                          <strong>{byId[id].title}</strong>
+                          <small>{byId[id].subtitle}</small>
+                        </div>
+                        <ArrowUpRight size={16} />
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
+            </details>
             <div className="knowledge-map-note">
               <GitBranch size={16} />
               <p>
